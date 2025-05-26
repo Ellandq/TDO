@@ -1,0 +1,37 @@
+version: "3.9"
+services:
+  generator:
+    build: ./metrics-generator
+    volumes:
+      - ./logs:/logs
+      - shared-data:/shared
+    networks:
+      - monitoring-network
+
+  processor:
+    build: ./metrics-processor
+    volumes:
+      - shared-data:/shared
+      - metrics-database:/db
+      - type: tmpfs
+        target: /tmp
+      - /tmp
+    networks:
+      - monitoring-network
+
+  api:
+    build: ./metrics-api
+    volumes:
+      - metrics-database:/data
+    ports:
+      - "8080:80"
+    networks:
+      - monitoring-network
+
+volumes:
+  shared-data:
+  metrics-database:
+
+networks:
+  monitoring-network:
+    driver: bridge

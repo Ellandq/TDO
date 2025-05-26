@@ -1,0 +1,51 @@
+version: "3.8"
+
+networks:
+  app-network:
+    driver: bridge
+
+services:
+  db:
+    image: postgres:15
+
+    networks:
+      - app-network
+
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  rest:
+    build: ./rest-app
+
+    networks:
+      - app-network
+      
+    depends_on:
+      - db
+
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+
+    ports:
+      - "3000:3000"
+  
+  console-app:
+
+    build: ./console-app
+
+    networks:
+      - app-network
+      
+    depends_on:
+      - db
+
+    environment:
+      MESSAGE: "${MESSAGE}"
+
+volumes:
+  pgdata:

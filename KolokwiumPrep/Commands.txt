@@ -1,0 +1,5 @@
+BUILDING AN IMAGE:
+docker build -t java-app .   
+
+ODPALANIE KONTENERA (ORAZ NAZWANIE GO)
+docker run --name Kolokwium-zad-1 java-app
